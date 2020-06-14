@@ -26,7 +26,7 @@ public class Remove extends Command {
         if (args.length>1){
             commandReceiver.remove(args);
         }else {
-            System.out.println("Enter file name after command");
+            System.out.println("Enter id after command");
         }
     }
 }

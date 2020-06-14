@@ -26,7 +26,7 @@ public class Update extends Command {
         if (args.length>1){
             commandReceiver.update(args, in);
         }else {
-            System.out.println("Enter file name after command");
+            System.out.println("Enter id after command");
         }
     }
 }

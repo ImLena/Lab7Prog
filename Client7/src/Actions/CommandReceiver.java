@@ -63,7 +63,7 @@ public class CommandReceiver{
         Thread.sleep(delay);
         System.out.println(Client.getMessage(channel));
         } else{
-            System.out.println("Enter key after 'inset'");
+            System.out.println("Enter key after 'insert'");
         }
     }
 

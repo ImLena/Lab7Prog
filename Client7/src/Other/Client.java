@@ -101,11 +101,6 @@ public class Client {
 
         return (String) o;
 
-/*        Socket socket = channel.socket();
-       // OutputStream out = socket.getOutputStream(); System.out.println("new mes!");
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        return in;*/
-
     }
 
     public static void writeCommand(SocketChannel channel, ReadCommand com) throws IOException {

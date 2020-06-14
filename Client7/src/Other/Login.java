@@ -20,15 +20,13 @@ public class Login {
             String answer = Client.getMessage(channel);
             System.out.println(answer);
             String[] answ = answer.split(" ");
-            System.out.println(Arrays.toString(answ));
             if (answ.length == 2) {
                 if (answ[0].equals("user")){
-                    if (answ[1].equals("logged") | answ.equals("registered")) {
+                    if (answ[1].equals("logged") | answ[1].equals("registered")) {
                         Client client = new Client(logPas[0]);
                         client.client(logPas[0], logPas[1]);
                         available = true;
                     }
-
                 }
             }
         }

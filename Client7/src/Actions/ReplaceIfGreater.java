@@ -26,7 +26,7 @@ public class ReplaceIfGreater extends Command {
         if (args.length>1){
             commandReceiver.replace_if_greater(args, in);
         }else {
-            System.out.println("Enter file name after command");
+            System.out.println("Enter id after command");
         }
     }
 }
