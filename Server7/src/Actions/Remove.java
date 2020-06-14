@@ -25,9 +25,9 @@ public class Remove extends Command {
         Long id = Long.valueOf(arg);
         String user = com.getLogin();
         TicketsDB.remove(id, user);
-        lock.readLock().lock();
-        lock.writeLock().lock();
         try {
+            lock.readLock().lock();
+            lock.writeLock().lock();
             mc.remove(id, user);
         }finally {
             lock.readLock().unlock();
