@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ReplaceIfGreater extends Command{
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException, SQLException {
         Ticket tic = com.getTicket();
@@ -29,11 +29,9 @@ public class ReplaceIfGreater extends Command{
         if (mc.getTickets().containsKey(id)) {
             TicketsDB.replaceIfGreater(tic, id);
             try {
-            lock.readLock().lock();
             lock.writeLock().lock();
                 mc.replace_if_greater(tic.getId(), tic, tic.getUser());
             }finally {
-                lock.readLock().unlock();
                 lock.writeLock().unlock();
             }
             if (mc.replace_if_greater(id, tic, tic.getUser())) {

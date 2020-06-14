@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Insert extends Command {
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public  String execute(ReadCommand com, MapCommands mc) throws IOException {
@@ -28,16 +28,18 @@ public class Insert extends Command {
             Ticket tic = com.getTicket();
             tic.setCreationDate(LocalDateTime.now());
             tic.setUser(com.getLogin());
-            TicketsDB.insert(tic);
-            try {
-                lock.readLock().lock();
-                lock.writeLock().lock();
-                mc.insert(Long.valueOf(com.getStrArgs()), tic);
-            } finally {
-                lock.readLock().unlock();
-                lock.writeLock().unlock();
+            if (!mc.getTickets().containsKey(tic.getId())) {
+                    TicketsDB.insert(tic);
+                    try {
+                        lock.writeLock().lock();
+                        mc.insert(Long.valueOf(com.getStrArgs()), tic);
+                    } finally {
+                        lock.writeLock().unlock();
+                    }
+                    return "Element with ID " + com.getStrArgs() + " inserted to collection";
+            } else {
+                return "Element with such id exist, to update element use command 'update'";
             }
-            return "Element with ID " + com.getStrArgs() + " inserted to collection";
 
 
         } catch (NumberFormatException | IOException | SQLException e) {

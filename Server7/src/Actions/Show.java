@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Show extends Command implements Serializable {
     private static final long serialVersionUID = 32L;
 
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException {
@@ -27,7 +27,7 @@ public class Show extends Command implements Serializable {
         lock.readLock().lock();
            answ = mc.show();
         }finally {
-        lock.readLock().unlock();
+            lock.readLock().unlock();
         }
         return answ;
     }

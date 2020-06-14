@@ -32,9 +32,6 @@ public class CommandInvoker {
     public void addCom(){
         commands.put("clear", new Clear());
         commands.put("count_greater_than_price", new CountGreaterThanPrice());
-       // commands.put("execute_script", es);
-       // commands.put("help", help);
-       // commands.put("history", history);
         commands.put("info", new Info());
         commands.put("insert", new Insert());
         commands.put("min_by_creation_date", new MinByCreationDate());
@@ -46,14 +43,6 @@ public class CommandInvoker {
         commands.put("update", new Update());
         commands.put("login", new Login());
         commands.put("regist", new Regist());
-    }
-
-    public Command getCommand(String str){
-        return commands.get(str);
-    }
-
-    public LinkedHashMap<String, Command> getCommands(){
-        return commands;
     }
     public String executeCom(MapCommands mc, ReadCommand com) throws IOException, ClassNotFoundException {
         addCom();

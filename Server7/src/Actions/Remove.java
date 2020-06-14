@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Remove extends Command {
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException {
@@ -26,11 +26,9 @@ public class Remove extends Command {
         String user = com.getLogin();
         TicketsDB.remove(id, user);
         try {
-            lock.readLock().lock();
             lock.writeLock().lock();
             mc.remove(id, user);
         }finally {
-            lock.readLock().unlock();
             lock.writeLock().unlock();
         }
         return  "Element " + arg + " removed";

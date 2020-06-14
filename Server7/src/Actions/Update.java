@@ -21,34 +21,32 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Update extends Command {
 
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
 
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException {
         try {
+            String answ;
             String arg = com.getStrArgs();
             Long id = Long.valueOf(arg);
-            LocalDateTime date = LocalDateTime.now();
-            for (Map.Entry<Long, Ticket> x : mc.getTickets().entrySet()) {
-                if (x.getValue().getId() == id) {
-                    Ticket tic = com.getTicket();
-                    tic.setId(id);
-                    tic.setCreationDate(date);
-                    tic.setUser(com.getLogin());
+            Ticket tic = com.getTicket();
+            if (mc.getTickets().containsKey(id)){
+                if(mc.getTickets().get(id).getUser().equals(tic.getUser())){
                     TicketsDB.update(tic, id);
                     try {
-                    lock.readLock().lock();
                     lock.writeLock().lock();
-                        mc.insert(id, x.getValue());
+                        answ = mc.update(id, tic);
                     } finally {
-                        lock.readLock().unlock();
                         lock.writeLock().unlock();
                     }
-                    return "Element with ID " + id + " updated";
+                    return answ;
+                } else {
+                    return "This element belongs to another user.";
                 }
-            }
+            } else{
             return "No element with such ID, to add new element use command insert";
+        }
 
         } catch (NumberFormatException | SQLException e) {
             return "Not correct key";

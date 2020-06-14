@@ -83,12 +83,21 @@ public class MapCommands implements Comparable<Ticket>{
     }
 
     public String insert(Long elemId, Ticket tic) throws IOException {
-        if (!tm.getTickets().containsKey(elemId)/*&&tm.getTickets().get(elemId).getUser().equals(user)*/) {
+        if (!tm.getTickets().containsKey(elemId)) {
             tm.getTickets().put(elemId, tic);
             return "Element with key " + elemId + " added to collection.";
         } else {
             return "ELement with key " + elemId + " exist, to update this element use command update";
         }
+    }
+
+    public String update(Long id, Ticket tic){
+       // if (tm.getTickets().containsKey(id)&&tm.getTickets().get(id).getUser().equals(tic.getUser())) {
+            tm.getTickets().put(id, tic);
+            return "Element with key " + id + " updated.";
+        /*} else {
+            return "ELement with key " + id + " doesn't exist, to insert new element use command insert.";
+        }*/
     }
 
     public String clear(String user) {

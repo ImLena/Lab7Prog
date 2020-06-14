@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class RemoveGreater extends Command{
 
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException {
@@ -28,11 +28,9 @@ public class RemoveGreater extends Command{
             if (tic != null) {
                 TicketsDB.removeGreater(tic, user);
                 try {
-                    lock.readLock().lock();
                     lock.writeLock().lock();
                     mc.remove_greater(tic, user);
                 }finally {
-                    lock.readLock().unlock();
                     lock.writeLock().unlock();
                 }
                 return "Command remove_greater executed successfully";

@@ -5,7 +5,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Base64;
-import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 public class RegistBase {
@@ -13,8 +12,9 @@ public class RegistBase {
     private static Connection connection;
     private static Logger log = Logger.getLogger(RegistBase.class.getName());
 
-    public RegistBase(Connection connect) {
+    public RegistBase(Connection connect) throws SQLException {
         connection = connect;
+        //this.createUsersDB();
     }
 
     public void closeConnection() {
@@ -24,51 +24,35 @@ public class RegistBase {
         catch (SQLException ignored){ }
     }
 
-    public static LinkedHashMap<String, String> getUsers() throws SQLException {
-        LinkedHashMap<String, String> users = new LinkedHashMap<>();
-        String password;
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM users");
-        while (rs.next()) {
-            String user = rs.getString(1);
-            password = rs.getString(2);/*
-            password[1] = rs.getString(3);*/
-            users.put(user, password);
-        }
-        statement.close();
-        return users;
-    }
-
     public static String addNewUser(String login, String password) throws SQLException {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, login);
-        preparedStatement.setString(2, password);
-        preparedStatement.execute();
-        preparedStatement.close();
-        return "user reggistered";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, login);
+            String pass = hash(password);
+            preparedStatement.setString(2, pass);
+            preparedStatement.execute();
+            System.out.println("user registered.");
+            return "user registered";
+        }
     }
 
     public static String login(String login, String password) throws SQLException {
-       /* PreparedStatement statement;
-        if (statement = connection.prepareStatement("select exists(select 1 from " + base + " where username = " + login).equals("true")) {
-*/
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?");
-            statement.setString(1, login);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()&&hash(password/*, rs.getString("salt")*/)
-                    .equals(rs.getString("password"))) {
-                System.out.println("user logged");
-                statement.close();
-                return "user logged";
-        }else {
-        System.out.println("user didn't logged");
-        return "Wrong username or password";
-        }
+       try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+           statement.setString(1, login);
+           ResultSet rs = statement.executeQuery();
+           if (rs.next() && hash(password)
+                   .equals(rs.getString("password"))) {
+               System.out.println("user logged.");
+               return "user logged";
+           } else {
+               System.out.println("user didn't logged");
+               return "Wrong username or password";
+           }
+       }
 
     }
 
-    private static String hash(String password/*, String salt*/){
+    private static String hash(String password){
         try{
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             System.out.println(password);

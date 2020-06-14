@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class PrintDescending extends Command {
 
     private static final long serialVersionUID = 32L;
-    ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public String execute(ReadCommand com, MapCommands mc) {
@@ -27,7 +27,6 @@ public class PrintDescending extends Command {
         }finally {
             lock.readLock().unlock();
         }
-
         return answ;
     }
 }

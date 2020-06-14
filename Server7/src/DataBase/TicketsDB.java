@@ -4,7 +4,6 @@ import Collections.*;
 import org.postgresql.util.PSQLException;
 
 import java.sql.*;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -69,7 +68,7 @@ public class TicketsDB {
             preparedStatement.setString(3, tic.getName());
             preparedStatement.setFloat(4, tic.getCoordinates().getX());
             preparedStatement.setInt(5, tic.getCoordinates().getY());
-           preparedStatement.setTimestamp(6, Timestamp.valueOf(tic.getCreationDate()));
+            preparedStatement.setTimestamp(6, Timestamp.valueOf(tic.getCreationDate()));
             preparedStatement.setFloat(7, tic.getPrice());
             preparedStatement.setString(8, String.valueOf(tic.getType()));
             preparedStatement.setDouble(9, tic.getPerson().getHeight());

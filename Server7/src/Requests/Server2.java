@@ -16,9 +16,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
 
 public class Server2 {
@@ -68,8 +65,6 @@ public class Server2 {
                     }
                     if (key.isReadable()) {
                         SocketChannel channel = (SocketChannel) key.channel();
-                     //   System.out.println("waiting....");
-
                         threadCom.put(key, reading.submit(new ReadClient(channel)));
                         key.interestOps(SelectionKey.OP_WRITE);
 
