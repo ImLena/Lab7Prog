@@ -1,0 +1,18 @@
+CREATE TABLE tickets
+(
+    id  BIGINT NOT NULL PRIMARY KEY,
+    user_name VARCHAR NOT NULL,
+    name VARCHAR NOT NULL,
+    x FLOAT NOT NULL,
+    y FLOAT NOT NULL,
+    created_date DATE NOT NULL,
+    price FLOAT NOT NULL,
+    type VARCHAR NOT NULL,
+    height FLOAT NOT NULL,
+    place VARCHAR NOT NULL,
+    xpl BIGINT NOT NULL,
+    ypl FLOAT NOT NULL,
+    zpl FLOAT NOT NULL
+);
+
+CREATE SEQUENCE tickets_seq START 1;
