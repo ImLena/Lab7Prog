@@ -78,7 +78,7 @@ public class CommandReceiver{
         ReadCommand rc = new ReadCommand("print_descending", null,null, login, pas);
         Client.writeCommand(channel, rc);
         Thread.sleep(delay);
-        Client.getMessage(channel);
+        System.out.println(Client.getMessage(channel));
     }
 
     public void remove(String[] args) throws IOException {
