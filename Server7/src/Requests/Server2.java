@@ -32,10 +32,8 @@ public class Server2 {
     public static void server(int port) throws IOException, SQLException {
         Base dataBase = new Base();
 
-        RegistBase users = dataBase.getUsersDB();//new RegistBase(connection);
-        TicketsDB ticketsDB = dataBase.getTicketsDB();//new TicketsDB(connection);
-      //  users.createUsersDB();
-      //  ticketsDB.createTicketsDB();
+        RegistBase users = dataBase.getUsersDB();
+        TicketsDB ticketsDB = dataBase.getTicketsDB();
         TicketMap tm;
         ServerHandler serverHandler = null;
         LinkedHashMap<SelectionKey, Future<ReadCommand>> threadCom = new LinkedHashMap<>();
@@ -96,25 +94,11 @@ public class Server2 {
                         } catch (InterruptedException | ExecutionException | CancelledKeyException e) {
                             e.printStackTrace();
                             log.warning("\nDisconnection.");
+                            ticketsDB.closeConnection();
+                            users.closeConnection();
                             key.cancel();
                         }
                     }
-            }
-        }
-    }
-
-
-    private static void readCmd(String str) {
-        //CSVToFile ctf = new CSVToFile();
-        if (str.equals("save")) {
-           // ctf.csvtofile(TicketMap.getTickets()); needs SAAAAAAAAAVE
-        } else {
-            if (str.equals("exit")) {
-             //   ctf = new CSVToFile();
-               // ctf.csvtofile(TicketMap.getTickets()); needs SAAAAAAAAVE
-                System.exit(0);
-            } else {
-                log.info("Unknown command");
             }
         }
     }

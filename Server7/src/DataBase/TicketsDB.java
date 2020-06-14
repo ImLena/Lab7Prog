@@ -19,8 +19,7 @@ public class TicketsDB {
     }
 
     public static void createTicketsDB() throws SQLException {
-        try {
-            Statement statement = connection.createStatement();
+        try(Statement statement = connection.createStatement();) {
             String createTableSQL = "CREATE TABLE tickets(id BIGINT NOT NULL," +
                     " username VARCHAR NOT NULL, " +
                     "name VARCHAR NOT NULL, " +
@@ -30,10 +29,8 @@ public class TicketsDB {
                     "place VARCHAR NOT NULL, xpl BIGINT NOT NULL, " +
                     "ypl FLOAT NOT NULL, zpl FLOAT NOT NULL)";
 
-            //   DatabaseInitializer.runSql(createTableSQL, connection);
             statement.execute(createTableSQL);
             log.info("Tickets db created");
-            statement.close();
         } catch (RuntimeException e) {
             log.info("This data base is already created");
         } catch (Exception e) {
@@ -42,9 +39,8 @@ public class TicketsDB {
 
 
     public LinkedHashMap<Long, Ticket> loadTicketsDB() throws SQLException {
-        try {
+        try(Statement statement = connection.createStatement();) {
             LinkedHashMap<Long, Ticket> tm = new LinkedHashMap<>();
-            Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery("SELECT * FROM tickets");
             while (rs.next()) {
                 TicketType type = (!rs.getString("type").isEmpty()) ? TicketType.valueOf(rs.getString(8)) : null;
@@ -57,7 +53,6 @@ public class TicketsDB {
                 tic.setId(rs.getLong("id"));
                 tm.put(rs.getLong("id"), tic);
             }
-            statement.close();
             return tm;
         } catch (PSQLException e) {
             log.warning("Oh no, this base seems to be broken :(");
@@ -68,9 +63,7 @@ public class TicketsDB {
     }
 
     public static void insert(Ticket tic) throws SQLException {
-        try {
-            PreparedStatement preparedStatement;
-            preparedStatement = connection.prepareStatement("INSERT INTO " + base + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + base + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");) {
             preparedStatement.setLong(1, tic.getId());
             preparedStatement.setString(2, tic.getUser());
             preparedStatement.setString(3, tic.getName());
@@ -92,63 +85,66 @@ public class TicketsDB {
     }
 
     public static String clear(String user) throws SQLException {
-        Statement st = connection.createStatement();
-        StringBuilder sb = new StringBuilder();
-        st.executeUpdate("DELETE FROM " + base + " WHERE username = '" + user + "'");
-        ResultSet rs = st.executeQuery("SELECT * FROM " + base);
-        while (rs.next()) {
-            sb.append(rs.getString("id") + ",");
-        }
-        if (!sb.toString().isEmpty()) sb.deleteCharAt(sb.length() - 1);
-        st.close();
-        return sb.toString();
+        try(Statement st = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder();
+            st.executeUpdate("DELETE FROM " + base + " WHERE username = '" + user + "'");
+            ResultSet rs = st.executeQuery("SELECT * FROM " + base);
+            while (rs.next()) {
+                sb.append(rs.getString("id") + ",");
+            }
+            if (!sb.toString().isEmpty()) sb.deleteCharAt(sb.length() - 1);
+
+            return sb.toString();
+        }catch (Exception e){
+        e.printStackTrace();
+        return null;
+    }
     }
 
     public static String removeGreater(Ticket tic, String user) throws SQLException {
-        Statement st = connection.createStatement();
-        st.execute("DELETE FROM " + base + " WHERE price > '" + tic.getPrice() + "' AND \"username\" = '" + user + "'");
-        ResultSet rs = st.executeQuery("select name from " + base + " where price > '" + tic.getPrice() + "' and \"user\" != '" + user + "'");
-        st.close();
-        return "";
+        try(Statement st = connection.createStatement()) {
+            st.execute("DELETE FROM " + base + " WHERE price > '" + tic.getPrice() + "' AND \"username\" = '" + user + "'");
+            ResultSet rs = st.executeQuery("select name from " + base + " where price > '" + tic.getPrice() + "' and \"user\" != '" + user + "'");
+            st.close();
+            return "";
+        }
     }
 
     public static void remove(Long id, String user) throws SQLException {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("select username from " + base + " where id ='" + id + "'");
-        rs.next();
-        if (!rs.getString("username").equals(user))
-            throw new SQLException("This object belongs to another user, you can't change it.");
-        st.executeUpdate("delete from " + base + " where id = '" + id + "'");
-        st.close();
+        try(Statement st = connection.createStatement()) {
+            ResultSet rs = st.executeQuery("select username from " + base + " where id ='" + id + "'");
+            rs.next();
+            if (!rs.getString("username").equals(user))
+                throw new SQLException("This object belongs to another user, you can't change it.");
+            st.executeUpdate("delete from " + base + " where id = '" + id + "'");
+        }
     }
 
     public static void replaceIfGreater(Ticket tic, Long id) throws SQLException {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("select * from " + base + " where place < '" + tic.getName() + "' and id = '" + id + "'");
-        if (rs.next()) {
-            if (!rs.getString("username").equals(tic.getUser()))
-                throw new SQLException("Object with id = " + id + " belongs to another user, you can't change it.");
-            remove(id, tic.getUser());
-            tic.setId(rs.getLong("id"));
-            insert(tic);
+        try(Statement st = connection.createStatement()) {
+            ResultSet rs = st.executeQuery("select * from " + base + " where place < '" + tic.getName() + "' and id = '" + id + "'");
+            if (rs.next()) {
+                if (!rs.getString("username").equals(tic.getUser()))
+                    throw new SQLException("Object with id = " + id + " belongs to another user, you can't change it.");
+                remove(id, tic.getUser());
+                tic.setId(rs.getLong("id"));
+                insert(tic);
+            }
         }
-        st.close();
     }
 
     public static void update(Ticket tic, Long id) throws SQLException {
-        //  String query ="SELECT * from " + base + " WHERE id = "+id;
-        //  DatabaseInitializer.runSql(query, connection);
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * from " + base + " WHERE id = " + id);
-        if (rs.next()) {
-            System.out.println("updating...");
-            if (!rs.getString("username").equals(tic.getUser()))
-                throw new SQLException("Object with id = " + id + " belongs to another user, you can't change it.");
-            System.out.println("correct user");
-            remove(rs.getLong("id"), tic.getUser());
-            insert(tic);
+        try(Statement statement = connection.createStatement()) {
+            ResultSet rs = statement.executeQuery("SELECT * from " + base + " WHERE id = " + id);
+            if (rs.next()) {
+                System.out.println("updating...");
+                if (!rs.getString("username").equals(tic.getUser()))
+                    throw new SQLException("Object with id = " + id + " belongs to another user, you can't change it.");
+                System.out.println("correct user");
+                remove(rs.getLong("id"), tic.getUser());
+                insert(tic);
+            }
         }
-        statement.close();
     }
 
     public void closeConnection() {
