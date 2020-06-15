@@ -14,7 +14,7 @@ public class TicketsDB {
 
     public TicketsDB(Connection connect) throws SQLException {
         connection = connect;
-        // this.createTicketsDB();
+        this.createTicketsDB();
     }
 
     public static void createTicketsDB() throws SQLException {
@@ -32,6 +32,8 @@ public class TicketsDB {
             log.info("Tickets db created");
         } catch (RuntimeException e) {
             log.info("This data base is already created");
+        }catch (SQLException e){
+            log.info("Tickets db uploaded");
         } catch (Exception e) {
         }
     }

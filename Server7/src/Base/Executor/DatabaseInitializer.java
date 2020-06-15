@@ -26,10 +26,10 @@ public final class DatabaseInitializer {
             initialize();
 
 // Проверка на то, что база уже инициализирована
-            if (isCreated()) {
+         /*   if (isCreated()) {
                 return;
             }
-
+*/
             Arrays.stream(sqlCommands.split(";"))
                     .forEach(sqlCommand -> runSql(sqlCommand, connection));
 
@@ -40,9 +40,9 @@ public final class DatabaseInitializer {
         }
     }
 
-    private static boolean isCreated() {
+    public static boolean isCreated(String base, Connection con) {
         try {
-            runSql("SELECT * FROM tickets", connection);
+            runSql("SELECT * FROM " + base, con);
         } catch (RuntimeException e) {
             System.out.println("Duplicated query: " + e.getMessage());
             return true;

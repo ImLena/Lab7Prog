@@ -45,17 +45,25 @@ public class MapCommands implements Comparable<Ticket>{
 
     public String min_by_creation_date() throws IOException {
         StringBuilder sb = new StringBuilder();
-        Map.Entry<Long, Ticket> tick = tm.getTickets().entrySet().stream().min(Comparator.comparing(x -> x.getValue().getCreationDate())).get();
-        sb.append(tick.toString());
+        if (!tm.getTickets().isEmpty()){
+            Map.Entry<Long, Ticket> tick = tm.getTickets().entrySet().stream().min(Comparator.comparing(x -> x.getValue().getCreationDate())).get();
+            sb.append(tick.toString());
+    }else {
+        sb.append("Collection is empty");
+    }
         return sb.toString();
     }
 
     public String print_descending() {
         StringBuilder sb = new StringBuilder();
-        tm.getTickets().entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
-                .forEach(x -> sb.append(x.toString() + "\n"));
+        if (!tm.getTickets().isEmpty()) {
+            tm.getTickets().entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                    .forEach(x -> sb.append(x.toString() + "\n"));
+        }else {
+            sb.append("Collection is empty");
+        }
         return sb.toString();
     }
 

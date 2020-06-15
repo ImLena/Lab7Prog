@@ -24,14 +24,18 @@ public class Remove extends Command {
         String arg = com.getStrArgs();
         Long id = Long.valueOf(arg);
         String user = com.getLogin();
-        TicketsDB.remove(id, user);
-        try {
-            lock.writeLock().lock();
-            mc.remove(id, user);
-        }finally {
-            lock.writeLock().unlock();
+        if (mc.getTickets().containsKey(id)) {
+            TicketsDB.remove(id, user);
+            try {
+                lock.writeLock().lock();
+                mc.remove(id, user);
+            } finally {
+                lock.writeLock().unlock();
+            }
+            return "Element " + arg + " removed";
+        } else {
+            return "No element with such id";
         }
-        return  "Element " + arg + " removed";
         } catch (NumberFormatException | SQLException e) {
             return "Not correct key";
         }

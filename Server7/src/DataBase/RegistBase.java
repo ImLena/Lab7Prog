@@ -1,5 +1,7 @@
 package DataBase;
 
+import Base.Executor.DatabaseInitializer;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,7 +16,7 @@ public class RegistBase {
 
     public RegistBase(Connection connect) throws SQLException {
         connection = connect;
-        //this.createUsersDB();
+        this.createUsersDB();
     }
 
     public void closeConnection() {
@@ -66,15 +68,20 @@ public class RegistBase {
 
 
     public static void createUsersDB() throws SQLException {
-        try {
-            Statement statement = connection.createStatement();
-            String createTableSQL = "CREATE TABLE users " +
-                    "(username TEXT, " +
-                    " password TEXT)";
-            statement.execute(createTableSQL);
-            log.info("Users db created");
-        }catch (RuntimeException e){
+        try(Statement statement = connection.createStatement();) {
+          //  if (!DatabaseInitializer.isCreated("users", connection)) {
+                String createTableSQL = "CREATE TABLE users " +
+                        "(username TEXT, " +
+                        " password TEXT)";
+                statement.execute(createTableSQL);
+                log.info("Users db created");
+            /*}else {
+                log.info("Users db uploaded");
+            }*/
+        }catch (RuntimeException e) {
             log.info("This data base is already created");
+        } catch (SQLException e){
+            log.info("Users db uploaded");
         } catch (Exception e) {
             e.printStackTrace();
         }

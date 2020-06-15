@@ -26,25 +26,14 @@ public class Server2 {
     private static ExecutorService handling = Executors.newCachedThreadPool();
     private static ForkJoinPool sending = new ForkJoinPool();
 
-    public static void server(int port) throws IOException, SQLException {
+    public static void server(ServerHandler serverHandler) throws IOException, SQLException {
         Base dataBase = new Base();
 
         RegistBase users = dataBase.getUsersDB();
         TicketsDB ticketsDB = dataBase.getTicketsDB();
         TicketMap tm;
-        ServerHandler serverHandler = null;
         LinkedHashMap<SelectionKey, Future<ReadCommand>> threadCom = new LinkedHashMap<>();
         LinkedHashMap<SelectionKey, Future<String>> threadAnsw = new LinkedHashMap<>();
-
-        try {
-            serverHandler = new ServerHandler(port);
-        } catch (BindException e) {
-            log.warning("Port is already using :(");
-            System.exit(1);
-        } catch (Exception e) {
-            log.warning("Server died, come back later! Have a nice day!");
-            System.exit(0);
-        }
 
         tm = new TicketMap(ticketsDB.loadTicketsDB());
         MapCommands mc = new MapCommands(tm);
@@ -89,8 +78,8 @@ public class Server2 {
                         } catch (InterruptedException | ExecutionException | CancelledKeyException e) {
                             e.printStackTrace();
                             log.warning("\nDisconnection.");
-                            ticketsDB.closeConnection();
-                            users.closeConnection();
+                           /* ticketsDB.closeConnection();
+                            users.closeConnection();*/
                             key.cancel();
                         }
                     }
