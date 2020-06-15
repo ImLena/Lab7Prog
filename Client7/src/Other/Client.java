@@ -8,7 +8,6 @@ import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
 public class Client {
-    private static final int serverPort = 1213;
     private static final String localhost = "127.0.0.1";
     private static SocketChannel channel;
     private static String login;
@@ -22,7 +21,7 @@ public class Client {
         return login;
     }
 
-    public static void loginClient() throws IOException, ClassNotFoundException, InterruptedException {
+    public static void loginClient(int serverPort) throws IOException, ClassNotFoundException, InterruptedException {
         try {
             InetSocketAddress ip = new InetSocketAddress(localhost, serverPort);
             channel = SocketChannel.open(ip);
