@@ -8,7 +8,7 @@ import java.sql.Statement;
     public class Base {
         private final String url = "jdbc:postgresql://localhost:5432/postgres";
         private final String user = "postgres";
-        private final String password = "puz273";
+        private final String password = "password";
         private Connection connection;
         private Statement statement;
         private static RegistBase users;
