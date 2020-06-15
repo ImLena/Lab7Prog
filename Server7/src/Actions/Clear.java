@@ -20,13 +20,14 @@ public class Clear extends Command {
     @Override
     public String execute(ReadCommand com, MapCommands mc) throws IOException, SQLException {
         TicketsDB.clear(com.getLogin());
+        String s;
         try {
             lock.writeLock().lock();
-            mc.clear(com.getLogin());
+            s = mc.clear(com.getLogin());
         }finally {
             lock.writeLock().unlock();
         }
 
-        return "Collection is clear";
+        return s;
     }
 }

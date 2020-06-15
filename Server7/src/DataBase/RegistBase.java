@@ -27,14 +27,18 @@ public class RegistBase {
     }
 
     public static String addNewUser(String login, String password) throws SQLException {
-        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, login);
-            String pass = hash(password);
-            preparedStatement.setString(2, pass);
-            preparedStatement.execute();
-            System.out.println("user registered.");
-            return "user registered";
+        if (!isRegistered(login)) {
+            String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, login);
+                String pass = hash(password);
+                preparedStatement.setString(2, pass);
+                preparedStatement.execute();
+                System.out.println("user registered.");
+                return "user registered";
+            }
+        }else {
+            return "this user exist";
         }
     }
 
@@ -85,5 +89,18 @@ public class RegistBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isRegistered(String login) throws SQLException {
+        try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+            statement.setString(1, login);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
     }
 }

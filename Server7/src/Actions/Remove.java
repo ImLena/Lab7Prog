@@ -24,15 +24,16 @@ public class Remove extends Command {
         String arg = com.getStrArgs();
         Long id = Long.valueOf(arg);
         String user = com.getLogin();
+        String answ;
         if (mc.getTickets().containsKey(id)) {
             TicketsDB.remove(id, user);
             try {
                 lock.writeLock().lock();
-                mc.remove(id, user);
+                answ = mc.remove(id, user);
             } finally {
                 lock.writeLock().unlock();
             }
-            return "Element " + arg + " removed";
+            return answ;
         } else {
             return "No element with such id";
         }

@@ -93,7 +93,7 @@ public class TicketsDB {
             while (rs.next()) {
                 sb.append(rs.getString("id") + ",");
             }
-            if (!sb.toString().isEmpty()) sb.deleteCharAt(sb.length() - 1);
+          //  if (!sb.toString().isEmpty()) sb.deleteCharAt(sb.length() - 1);
 
             return sb.toString();
         }catch (Exception e){
@@ -102,22 +102,21 @@ public class TicketsDB {
     }
     }
 
-    public static String removeGreater(Ticket tic, String user) throws SQLException {
+    public static void removeGreater(Ticket tic, String user) throws SQLException {
         try(Statement st = connection.createStatement()) {
             st.execute("DELETE FROM " + base + " WHERE price > '" + tic.getPrice() + "' AND \"username\" = '" + user + "'");
             ResultSet rs = st.executeQuery("select name from " + base + " where price > '" + tic.getPrice() + "' and \"user\" != '" + user + "'");
-            st.close();
-            return "";
         }
     }
 
     public static void remove(Long id, String user) throws SQLException {
         try(Statement st = connection.createStatement()) {
-            ResultSet rs = st.executeQuery("select username from " + base + " where id ='" + id + "'");
-            rs.next();
-            if (!rs.getString("username").equals(user))
+            st.execute("DELETE FROM " + base + " WHERE id = '" + id + "' AND \"username\" = '" + user + "'");
+        //    ResultSet rs = st.executeQuery("select username from " + base + " where id ='" + id + "'");
+            //rs.next();
+           /* if (!rs.getString("username").equals(user))
                 throw new SQLException("This object belongs to another user, you can't change it.");
-            st.executeUpdate("delete from " + base + " where id = '" + id + "'");
+            st.executeUpdate("delete from " + base + " where id = '" + id + "'");*/
         }
     }
 
