@@ -8,35 +8,48 @@ import Collections.TicketMap;
 import Other.ReadCommand;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 public class Server2 {
 
     private static Logger log = Logger.getLogger(Server2.class.getName());
+    private static String url =  "jdbc:postgresql://localhost:5432/postgres";//"jdbc:postgresql://pg:5432/studs";
+    private static String user = "postgres";//  "";
+    private static String password = "";
 
     private static ExecutorService reading = Executors.newCachedThreadPool();
     private static ExecutorService handling = Executors.newCachedThreadPool();
     private static ForkJoinPool sending = new ForkJoinPool();
 
     public static void server(ServerHandler serverHandler) throws IOException, SQLException {
-        Base dataBase = new Base();
+        chooseDB();
+        MapCommands mc = null;
 
-        RegistBase users = dataBase.getUsersDB();
-        TicketsDB ticketsDB = dataBase.getTicketsDB();
+        try {
+            Base  dataBase = new Base(url, user, password);
+            RegistBase users = dataBase.getUsersDB();
+            TicketsDB ticketsDB = dataBase.getTicketsDB();
+        
         TicketMap tm;
-        LinkedHashMap<SelectionKey, Future<ReadCommand>> threadCom = new LinkedHashMap<>();
-        LinkedHashMap<SelectionKey, Future<String>> threadAnsw = new LinkedHashMap<>();
 
         tm = new TicketMap(ticketsDB.loadTicketsDB());
-        MapCommands mc = new MapCommands(tm);
+        mc = new MapCommands(tm); 
+        }catch (SQLException e){
+        System.out.println("Wrong data connection!");
+        Server2.server(serverHandler);
+    }catch (Exception ex){
+        ex.printStackTrace();
+    }
+        LinkedHashMap<SelectionKey, Future<ReadCommand>> threadCom = new LinkedHashMap<>();
+        LinkedHashMap<SelectionKey, Future<String>> threadAnsw = new LinkedHashMap<>();
 
         while (true) {
             serverHandler.getSelector().select(700);
@@ -85,5 +98,33 @@ public class Server2 {
                     }
             }
         }
+    }
+
+    private static void chooseDB(){
+        System.out.println("Do you want to connect to jdbc:postgresql://pg:5432/studs with user s261747? Yes/No");
+        String s = new Scanner(System.in).nextLine();
+        switch (s) {
+            case "Yes":
+                break;
+            case "No":
+                insertDB();
+                break;
+            default:
+                System.out.println("Not correct answer");
+                chooseDB();
+                break;
+        }
+
+    }
+
+    private static void insertDB(){
+        System.out.println("Enter url");
+        url = new Scanner(System.in).nextLine();
+
+        System.out.println("Enter user");
+        user = new Scanner(System.in).nextLine();
+
+        System.out.println("Enter password");
+        password = new Scanner(System.in).nextLine();
     }
 }

@@ -11,9 +11,16 @@ import java.util.logging.Logger;
 public class MainServer {
     private static Logger log = Logger.getLogger(Server2.class.getName());
     public static void main(String[] args) throws IOException, SQLException {
+        try{
             ServerHandler sh = port();
             Server2.server(sh);
+            } catch (IllegalArgumentException e){
+                System.out.println("wrong port");
+                main(args);
+
+            }
         }
+
 
      public static ServerHandler port() throws IOException {
          System.out.println("Enter port:");
@@ -24,10 +31,13 @@ public class MainServer {
          } catch (BindException e) {
              log.warning("Port is already using :(");
              port();
-         } catch (Exception e) {
+
+         /*} catch (Exception e) {
             log.warning("Server died, come back later! Have a nice day!");
-            System.exit(0);
+            e.printStackTrace();
+            System.exit(0);*/
     }
          return serverHandler;
      }
+
 }
