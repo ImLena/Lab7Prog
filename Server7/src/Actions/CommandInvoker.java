@@ -53,6 +53,8 @@ public class CommandInvoker {
         }
         catch (SQLException e){
             return "Something strange happened with Data Base: " +  e.getMessage();
+        } catch (NullPointerException ex){
+            return "Server let out a death rattle";
         }
     }
 

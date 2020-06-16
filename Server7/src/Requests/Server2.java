@@ -7,7 +7,9 @@ import Collections.MapCommands;
 import Collections.TicketMap;
 import Other.ReadCommand;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -21,8 +23,8 @@ import java.util.logging.Logger;
 public class Server2 {
 
     private static Logger log = Logger.getLogger(Server2.class.getName());
-    private static String url =  "jdbc:postgresql://localhost:5432/postgres";//"jdbc:postgresql://pg:5432/studs";
-    private static String user = "postgres";//  "";
+    private static String url = "jdbc:postgresql://pg:5432/studs";// "jdbc:postgresql://localhost:5432/postgres";
+    private static String user = "";//  "";
     private static String password = "";
 
     private static ExecutorService reading = Executors.newCachedThreadPool();
@@ -54,6 +56,11 @@ public class Server2 {
         while (true) {
             serverHandler.getSelector().select(700);
             Iterator iter = serverHandler.getSelector().selectedKeys().iterator();
+            if (System.in.available() > 0){
+                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                String s = r.readLine();
+                readCmd(s);
+            }
             while (iter.hasNext()) {
                 SelectionKey key = (SelectionKey) iter.next();
                 iter.remove();
@@ -126,5 +133,17 @@ public class Server2 {
 
         System.out.println("Enter password");
         password = new Scanner(System.in).nextLine();
+    }
+
+    private static void readCmd(String str) {
+        if (str.equals("save")) {
+            System.out.println("Collection is already saved");
+        } else {
+            if (str.equals("exit")) {
+                System.exit(0);
+            } else {
+                log.info("Unknown command");
+            }
+        }
     }
 }

@@ -4,7 +4,9 @@ import Requests.ServerHandler;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.net.SocketException;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -18,7 +20,12 @@ public class MainServer {
                 System.out.println("wrong port");
                 main(args);
 
-            }
+        }catch (NoSuchElementException e){
+            System.out.println("What a shame! Are you trying to break my code? Enter correct commands next time, please!\nDisappointed client disconnecting, start client again!");
+            System.exit(0);
+        } catch (NullPointerException e){
+            System.out.println("Something went wrong, please, start again.");
+        }
         }
 
 
@@ -30,6 +37,9 @@ public class MainServer {
              serverHandler = new ServerHandler(port);
          } catch (BindException e) {
              log.warning("Port is already using :(");
+             port();
+         } catch (SocketException e){
+             log.warning("Wrong port");
              port();
 
          /*} catch (Exception e) {
