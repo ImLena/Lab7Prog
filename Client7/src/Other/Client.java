@@ -1,10 +1,13 @@
 package Other;
 
 import Actions.*;
+
+import javax.sound.midi.Soundbank;
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Client {
@@ -32,7 +35,7 @@ public class Client {
         }
     }
 
-    public static void client(String login, String pas) {
+    public static void client(String login, String pas) throws InterruptedException {
         CommandInvoker commandInvoker = new CommandInvoker();
 
         try{
@@ -77,12 +80,20 @@ public class Client {
                 commandInvoker.execute(in.nextLine().split(" "), in);
             }
 
+            }catch (NoSuchElementException e){
+                System.out.println("What a shame! Are you trying to break my code? Enter correct commands next time, please!\nDisappointed client disconnecting, start client again!");
+
+        }catch (StackOverflowError e){
+            System.out.println("If you're trying to break my code be ready, that it will break you!");
+            client(login, pas);
+
             }catch (Exception exc) {
                 exc.printStackTrace();
             } finally {
             try {
                 if (channel != null)
                     channel.close();
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -90,15 +101,21 @@ public class Client {
     }
 
     public static String getMessage(SocketChannel socketChannel) throws IOException, ClassNotFoundException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024*1024);
-        socketChannel.read(byteBuffer);
+        try {
+            ByteBuffer byteBuffer = ByteBuffer.allocate(1024 * 1024);
+            socketChannel.read(byteBuffer);
 
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-        Object o = objectInputStream.readObject();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            Object o = objectInputStream.readObject();
 
-        return (String) o;
+            return (String) o;
+        } catch (StreamCorruptedException e) {
+            System.out.println("Congrats! You broke server!");
+            System.exit(0);
+            return null;
+        }
 
     }
 
